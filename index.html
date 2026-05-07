@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crazy Quiz Game</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body{
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      background-image:
+      linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+      url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1920&auto=format&fit=crop');
+
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+
+      color:white;
+    }
+
+    .quiz-container{
+      width:90%;
+      max-width:650px;
+      background:rgba(0,0,0,0.75);
+      backdrop-filter:blur(8px);
+      padding:35px;
+      border-radius:20px;
+      box-shadow:0 0 25px rgba(0,255,255,0.5);
+      border:2px solid #00e0ff;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:25px;
+      font-size:38px;
+      color:#00e0ff;
+      text-shadow:0 0 15px #00e0ff;
+    }
+
+    .question{
+      font-size:24px;
+      margin-bottom:20px;
+      line-height:1.5;
+    }
+
+    .options button{
+      width:100%;
+      padding:15px;
+      margin:12px 0;
+      border:none;
+      border-radius:12px;
+      background:#1e293b;
+      color:white;
+      font-size:18px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .options button:hover{
+      background:#00bcd4;
+      transform:scale(1.03);
+      box-shadow:0 0 15px #00e0ff;
+    }
+
+    .next-btn{
+      margin-top:20px;
+      width:100%;
+      padding:15px;
+      border:none;
+      border-radius:12px;
+      background:#00ff88;
+      color:black;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      display:none;
+      transition:0.3s;
+    }
+
+    .next-btn:hover{
+      transform:scale(1.02);
+      box-shadow:0 0 15px #00ff88;
+    }
+
+    .score-box{
+      text-align:center;
+    }
+
+    .score-box h2{
+      margin-bottom:20px;
+      font-size:35px;
+      color:#00ffae;
+    }
+
+    .restart-btn{
+      padding:14px 28px;
+      border:none;
+      border-radius:12px;
+      background:#ff9800;
+      color:white;
+      font-size:18px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .restart-btn:hover{
+      transform:scale(1.05);
+      box-shadow:0 0 15px #ff9800;
+    }
+
+    .correct{
+      background:#22c55e !important;
+    }
+
+    .wrong{
+      background:#ef4444 !important;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="quiz-container">
+
+    <h1>🔥 Crazy Quiz Game 🔥</h1>
+
+    <div id="quiz">
+
+      <div class="question" id="question">
+        Question
+      </div>
+
+      <div class="options" id="options"></div>
+
+      <button class="next-btn" id="nextBtn">
+        Next Question
+      </button>
+
+    </div>
+
+  </div>
+
+<script>
+
+const quizData = [
+
+  {
+    question: "What does HTML stand for?",
+    options: [
+      "Hyper Text Markup Language",
+      "High Transfer Machine Language",
+      "Hyperlinks Text Machine Language",
+      "Home Tool Markup Language"
+    ],
+    answer: "Hyper Text Markup Language"
+  },
+
+  {
+    question: "Which language is used for styling web pages?",
+    options: ["Python","CSS","C++","Java"],
+    answer: "CSS"
+  },
+
+  {
+    question: "Which company developed JavaScript?",
+    options: ["Google","Microsoft","Netscape","Apple"],
+    answer: "Netscape"
+  },
+
+  {
+    question: "Which tag is used for images in HTML?",
+    options: ["<pic>","<image>","<img>","<src>"],
+    answer: "<img>"
+  },
+
+  {
+    question: "Which CSS property changes text color?",
+    options: ["font-color","text-color","color","background"],
+    answer: "color"
+  }
+
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+
+function loadQuestion(){
+
+  resetState();
+
+  let currentQuiz = quizData[currentQuestion];
+
+  questionEl.innerText =
+  `${currentQuestion + 1}. ${currentQuiz.question}`;
+
+  currentQuiz.options.forEach(option => {
+
+    const button = document.createElement("button");
+
+    button.innerText = option;
+
+    button.addEventListener("click", () =>
+      selectAnswer(button, currentQuiz.answer)
+    );
+
+    optionsEl.appendChild(button);
+  });
+}
+
+function resetState(){
+  nextBtn.style.display = "none";
+  optionsEl.innerHTML = "";
+}
+
+function selectAnswer(button, correctAnswer){
+
+  const buttons = optionsEl.querySelectorAll("button");
+
+  buttons.forEach(btn => btn.disabled = true);
+
+  if(button.innerText === correctAnswer){
+
+    button.classList.add("correct");
+    score++;
+
+  }else{
+
+    button.classList.add("wrong");
+
+    buttons.forEach(btn => {
+
+      if(btn.innerText === correctAnswer){
+        btn.classList.add("correct");
+      }
+
+    });
+  }
+
+  nextBtn.style.display = "block";
+}
+
+nextBtn.addEventListener("click", () => {
+
+  currentQuestion++;
+
+  if(currentQuestion < quizData.length){
+
+    loadQuestion();
+
+  }else{
+
+    showScore();
+  }
+
+});
+
+function showScore(){
+
+  document.getElementById("quiz").innerHTML = `
+
+    <div class="score-box">
+
+      <h2>🎉 Your Score: ${score} / ${quizData.length}</h2>
+
+      <button class="restart-btn"
+      onclick="restartQuiz()">
+
+      Restart Quiz
+
+      </button>
+
+    </div>
+  `;
+}
+
+function restartQuiz(){
+  location.reload();
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
